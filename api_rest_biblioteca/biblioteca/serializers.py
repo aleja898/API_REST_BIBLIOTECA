@@ -33,3 +33,10 @@ class PrestamoSerializer(serializers.ModelSerializer):
         fields = ['id', 'libro', 'libro_titulo', 'usuario', 'usuario_nombre', 'fecha_prestamo', 'devuelto']
     
     def create(self, validated_data):
+        libro = validated_data('libro')
+        if not libro.disponible:
+            raise serializers.ValidationError("El libro no está disponible")
+        
+        libro.disponible = False
+        libro.save()
+        return super().create(validated_data)
